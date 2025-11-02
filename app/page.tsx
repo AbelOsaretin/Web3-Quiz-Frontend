@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Brain, Zap, Trophy, BarChart3 } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Brain, Zap, Trophy, BarChart3 } from "lucide-react";
 
 export default function Home() {
   return (
@@ -18,7 +18,10 @@ export default function Home() {
             <Link href="/categories" className="font-medium hover:text-primary">
               Languages
             </Link>
-            <Link href="/leaderboard" className="font-medium hover:text-primary">
+            <Link
+              href="/leaderboard"
+              className="font-medium hover:text-primary"
+            >
               Leaderboard
             </Link>
             <Link href="/profile" className="font-medium hover:text-primary">
@@ -45,15 +48,21 @@ export default function Home() {
           <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                Master Programming with <span className="text-primary">AI-Powered</span> Quizzes
+                Master Programming with{" "}
+                <span className="text-primary">AI-Powered</span> Quizzes
               </h1>
               <p className="text-lg text-muted-foreground">
-                BYTEBATTLE generates fresh, challenging questions across various programming languages, adapting to your
-                skill level for a personalized learning experience.
+                BYTEBATTLE generates fresh, challenging questions across various
+                programming languages, adapting to your skill level for a
+                personalized learning experience.
               </p>
               <div className="flex gap-4 pt-4">
                 <Link href="/quiz/new" passHref>
-                  <Button size="lg" className="gap-2" onClick={() => console.log("Start Quiz button clicked")}>
+                  <Button
+                    size="lg"
+                    className="gap-2"
+                    // onClick={() => console.log("Start Quiz button clicked")}
+                  >
                     <Zap className="h-5 w-5" />
                     Start Coding Quiz
                   </Button>
@@ -98,9 +107,12 @@ export default function Home() {
         <section className="py-20 bg-muted/50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful Features</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Powerful Features
+              </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                BYTEBATTLE combines cutting-edge AI with engaging gameplay to create a unique coding quiz experience
+                BYTEBATTLE combines cutting-edge AI with engaging gameplay to
+                create a unique coding quiz experience
               </p>
             </div>
 
@@ -109,9 +121,12 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Brain className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">AI-Generated Questions</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  AI-Generated Questions
+                </h3>
                 <p className="text-muted-foreground">
-                  Our AI creates fresh, original coding questions that adapt to your skill level and learning pace
+                  Our AI creates fresh, original coding questions that adapt to
+                  your skill level and learning pace
                 </p>
               </div>
 
@@ -119,9 +134,12 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Personalized Learning</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Personalized Learning
+                </h3>
                 <p className="text-muted-foreground">
-                  Track your coding progress and receive personalized recommendations based on your performance
+                  Track your coding progress and receive personalized
+                  recommendations based on your performance
                 </p>
               </div>
 
@@ -129,9 +147,12 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Trophy className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Competitive Leaderboards</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Competitive Leaderboards
+                </h3>
                 <p className="text-muted-foreground">
-                  Compete with fellow coders and climb the global and language-specific leaderboards
+                  Compete with fellow coders and climb the global and
+                  language-specific leaderboards
                 </p>
               </div>
             </div>
@@ -141,9 +162,12 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-20 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Level Up Your Coding Skills?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to Level Up Your Coding Skills?
+            </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-              Start your first coding quiz now and discover the power of AI-generated learning
+              Start your first coding quiz now and discover the power of
+              AI-generated learning
             </p>
             <Link href="/quiz/new">
               <Button size="lg" variant="secondary" className="gap-2">
@@ -163,16 +187,28 @@ export default function Home() {
               <span className="text-xl font-bold">BYTEBATTLE</span>
             </div>
             <div className="flex gap-8">
-              <Link href="/about" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="/about"
+                className="text-muted-foreground hover:text-primary"
+              >
                 About
               </Link>
-              <Link href="/privacy" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="/privacy"
+                className="text-muted-foreground hover:text-primary"
+              >
                 Privacy
               </Link>
-              <Link href="/terms" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="/terms"
+                className="text-muted-foreground hover:text-primary"
+              >
                 Terms
               </Link>
-              <Link href="/contact" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="/contact"
+                className="text-muted-foreground hover:text-primary"
+              >
                 Contact
               </Link>
             </div>
@@ -183,5 +219,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
