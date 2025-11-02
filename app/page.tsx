@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Brain, Zap, Bitcoin, BarChart3 } from "lucide-react";
+import { Brain, Zap, DollarSign, BarChart3 } from "lucide-react";
 
 export default function Home() {
   return (
@@ -57,7 +57,7 @@ export default function Home() {
                 experience.
               </p>
               <div className="flex gap-4 pt-4">
-                <Link href="/quiz/new" passHref>
+                <Link href="/categories" passHref>
                   <Button
                     size="lg"
                     className="gap-2"
@@ -148,7 +148,7 @@ export default function Home() {
 
               <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow quiz-card">
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Bitcoin className="h-6 w-6 text-primary" />
+                  <DollarSign className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">On-Chain Rewards</h3>
                 <p className="text-muted-foreground">
@@ -171,7 +171,7 @@ export default function Home() {
               Start your first Web3 quiz now and discover the power of
               AI-generated learning
             </p>
-            <Link href="/quiz/new">
+            <Link href="/categories">
               <Button size="lg" variant="secondary" className="gap-2">
                 <Zap className="h-5 w-5" />
                 Start Web3 Quiz Now

@@ -29,12 +29,8 @@ export default function PlayQuizPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
-  const [answers, setAnswers] = useState<Array<number | null>>([]);
-  const [score, setScore] = useState<number | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(timeLimit);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -49,18 +45,7 @@ export default function PlayQuizPage() {
           difficulty,
           count
         );
-
-        // normalize incoming question shape to our expected fields
-        const normalized = (generatedQuestions as any[]).map((g) => ({
-          question: g.question ?? g.Question,
-          options: g.options ?? g.Options,
-          correctAnswer: g.correctAnswer ?? g.CorrectAnswer ?? "",
-          questionId: g.questionId ?? g.QuestionId ?? null,
-        }));
-
-        setQuestions(normalized as Question[]);
-        // prepare answers array to match questions length
-        setAnswers(new Array(normalized.length).fill(null));
+        setQuestions(generatedQuestions);
       } catch (error) {
         console.error("Failed to generate questions:", error);
       } finally {
@@ -92,86 +77,21 @@ export default function PlayQuizPage() {
   }, [loading, quizCompleted, timeLimit, isAnswerSubmitted]);
 
   const currentQuestion = questions[currentQuestionIndex];
-  const answeredCount = answers.filter((a) => a !== null).length;
 
-  const handleAnswerSelect = (answer: string, index: number) => {
+  const handleAnswerSelect = (answer: string) => {
     if (isAnswerSubmitted) return;
     setSelectedAnswer(answer);
-    setSelectedIndex(index);
   };
 
-  const submitQuiz = async (finalAnswers: Array<number | null>) => {
-    setSubmitting(true);
-    setSubmissionError(null);
-    try {
-      // derive user info from query params or localStorage (if present)
-      const userId =
-        (searchParams.get("userId") as string | null) ||
-        (typeof window !== "undefined" ? localStorage.getItem("userId") : null);
-      const userWallet =
-        (searchParams.get("userWallet") as string | null) ||
-        (typeof window !== "undefined"
-          ? localStorage.getItem("userWallet")
-          : null);
-
-      // generate a quizAttemptId
-      const quizAttemptId =
-        (globalThis as any).crypto && (globalThis as any).crypto.randomUUID
-          ? (globalThis as any).crypto.randomUUID()
-          : `qa-${Date.now()}`;
-
-      // build answers payload expected by your webhook
-      const answersPayload = finalAnswers.map((ans, idx) => ({
-        questionId: (questions as any)[idx]?.questionId ?? idx + 1,
-        userAnswerIndex: ans,
-      }));
-
-      const payload = {
-        userId: userId ?? "",
-        userWallet: userWallet ?? "",
-        quizAttemptId,
-        answers: answersPayload,
-      };
-
-      const res = await fetch(
-        "https://abelosaretin.name.ng/webhook-test/submitQuiz",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`submission failed: ${res.status} ${text}`);
-      }
-
-      // if backend returns a score, use it
-      try {
-        const json = await res.json();
-        if (json && typeof json.score === "number") {
-          setScore(json.score);
-        }
-      } catch (e) {
-        // ignore JSON parse errors
-      }
-    } catch (err: any) {
-      console.error("Submit quiz error:", err);
-      setSubmissionError(err?.message ?? String(err));
-    } finally {
-      setSubmitting(false);
-      setQuizCompleted(true);
-    }
-  };
-
-  const handleAnswerSubmit = (answerIndex: number | null) => {
+  const handleAnswerSubmit = (answer: string | null) => {
     if (isAnswerSubmitted || !currentQuestion) return;
 
-    // compute next answers array synchronously to avoid race with state update
-    const nextAnswers = [...answers];
-    nextAnswers[currentQuestionIndex] = answerIndex;
-    setAnswers(nextAnswers);
+    const finalAnswer = answer || selectedAnswer;
+    const isCorrect = finalAnswer === currentQuestion.correctAnswer;
+
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
+    }
 
     setIsAnswerSubmitted(true);
 
@@ -180,12 +100,10 @@ export default function PlayQuizPage() {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
         setSelectedAnswer(null);
-        setSelectedIndex(null);
         setIsAnswerSubmitted(false);
         setTimeRemaining(timeLimit);
       } else {
-        // all questions answered: submit answers to backend
-        submitQuiz(nextAnswers);
+        setQuizCompleted(true);
       }
     }, 1500);
   };
@@ -226,10 +144,7 @@ export default function PlayQuizPage() {
   }
 
   if (quizCompleted) {
-    const percentage =
-      typeof score === "number" && questions.length
-        ? Math.round((score / questions.length) * 100)
-        : null;
+    const percentage = Math.round((score / questions.length) * 100);
 
     return (
       <div className="min-h-screen flex flex-col">
@@ -252,18 +167,14 @@ export default function PlayQuizPage() {
               <Card className="overflow-hidden">
                 <div
                   className="bg-primary h-2"
-                  style={{ width: `${percentage ?? 0}%` }}
+                  style={{ width: `${percentage}%` }}
                 ></div>
                 <CardHeader className="text-center">
                   <CardTitle className="text-3xl">Quiz Completed!</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex justify-center">
-                    {percentage === null ? (
-                      <div className="h-24 w-24 rounded-full bg-amber-100 flex items-center justify-center">
-                        <Brain className="h-12 w-12 text-amber-500" />
-                      </div>
-                    ) : percentage >= 70 ? (
+                    {percentage >= 70 ? (
                       <div className="h-24 w-24 rounded-full bg-green-100 flex items-center justify-center">
                         <CheckCircle className="h-12 w-12 text-green-500" />
                       </div>
@@ -277,23 +188,13 @@ export default function PlayQuizPage() {
                   <div className="text-center">
                     <h3 className="text-2xl font-bold">Your Score</h3>
                     <p className="text-5xl font-bold my-4">
-                      {typeof score === "number" ? (
-                        <>
-                          {score} / {questions.length}
-                          <span className="text-lg text-muted-foreground ml-2">
-                            ({percentage}%)
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-lg text-muted-foreground">
-                          Results pending...
-                        </span>
-                      )}
+                      {score} / {questions.length}
+                      <span className="text-lg text-muted-foreground ml-2">
+                        ({percentage}%)
+                      </span>
                     </p>
                     <p className="text-muted-foreground">
-                      {percentage === null
-                        ? "We'll send your answers to the server for grading."
-                        : percentage >= 90
+                      {percentage >= 90
                         ? "Outstanding! You're a true expert!"
                         : percentage >= 70
                         ? "Great job! You know your stuff!"
@@ -302,17 +203,6 @@ export default function PlayQuizPage() {
                         : "Keep practicing! You'll improve with time!"}
                     </p>
                   </div>
-
-                  {submitting && (
-                    <div className="text-center text-sm text-muted-foreground">
-                      Submitting your answers...
-                    </div>
-                  )}
-                  {submissionError && (
-                    <div className="text-center text-sm text-destructive">
-                      Submission error: {submissionError}
-                    </div>
-                  )}
 
                   <div className="border rounded-lg p-4 bg-muted/30">
                     <h4 className="font-semibold mb-2">Quiz Details</h4>
@@ -388,8 +278,8 @@ export default function PlayQuizPage() {
                 </h2>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Answered:</span>
-                <Badge>{answeredCount}</Badge>
+                <span className="text-sm text-muted-foreground">Score:</span>
+                <Badge>{score}</Badge>
               </div>
               {timeLimit > 0 && (
                 <div className="flex items-center gap-2">
@@ -419,21 +309,34 @@ export default function PlayQuizPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4">
-                    {currentQuestion.options.map((option, idx) => {
-                      const isSelected = selectedIndex === idx;
+                    {currentQuestion.options.map((option) => {
+                      const isSelected = selectedAnswer === option;
+                      const isCorrect =
+                        isAnswerSubmitted &&
+                        option === currentQuestion.correctAnswer;
+                      const isWrong =
+                        isAnswerSubmitted &&
+                        isSelected &&
+                        option !== currentQuestion.correctAnswer;
 
                       return (
                         <Button
                           key={option}
                           variant={isSelected ? "default" : "outline"}
                           className={`h-auto py-4 px-6 justify-start text-left ${
-                            isSelected ? "bg-primary text-white" : ""
+                            isCorrect
+                              ? "bg-green-500 hover:bg-green-500 text-white"
+                              : isWrong
+                              ? "bg-red-500 hover:bg-red-500 text-white"
+                              : ""
                           }`}
-                          onClick={() => handleAnswerSelect(option, idx)}
+                          onClick={() => handleAnswerSelect(option)}
                           disabled={isAnswerSubmitted}
                         >
                           <div className="flex items-center gap-2 w-full">
                             <span className="flex-1">{option}</span>
+                            {isCorrect && <CheckCircle className="h-5 w-5" />}
+                            {isWrong && <XCircle className="h-5 w-5" />}
                           </div>
                         </Button>
                       );
@@ -443,8 +346,8 @@ export default function PlayQuizPage() {
                 <CardFooter>
                   <Button
                     className="w-full gap-2"
-                    onClick={() => handleAnswerSubmit(selectedIndex)}
-                    disabled={selectedIndex === null || isAnswerSubmitted}
+                    onClick={() => handleAnswerSubmit(selectedAnswer)}
+                    disabled={!selectedAnswer || isAnswerSubmitted}
                   >
                     {isAnswerSubmitted ? "Next Question" : "Submit Answer"}
                     <ArrowRight className="h-5 w-5" />

@@ -216,6 +216,27 @@ export async function generateQuestions(category: string, difficulty: string, co
   try {
     // This is a placeholder for the AI-generated questions
     // In a real implementation, we would use the AI SDK to generate questions
+    const response = await fetch("https://abelosaretin.name.ng/webhook-test/getQuiz", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        category,
+        difficulty,
+        count,
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(response)
+      throw new Error("Failed to fetch questions");
+    }
+
+    const data = await response.json();
+
+    console.log(data)
+    return data;
 
     // For now, return mock data based on the category
     const availableQuestions = mockQuestions[category] || mockQuestions.javascript
