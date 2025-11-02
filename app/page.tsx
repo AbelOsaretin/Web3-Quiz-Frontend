@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Brain, Zap, Trophy, BarChart3 } from "lucide-react";
+import { Brain, Zap, Bitcoin, BarChart3 } from "lucide-react";
 
 export default function Home() {
   return (
@@ -9,16 +9,16 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Brain className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">BYTEBATTLE</h1>
+            <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
           </div>
           <nav className="hidden md:flex gap-6">
             <Link href="/" className="font-medium hover:text-primary">
               Home
             </Link>
             <Link href="/categories" className="font-medium hover:text-primary">
-              Languages
+              Categories
             </Link>
-            <Link
+            {/* <Link
               href="/leaderboard"
               className="font-medium hover:text-primary"
             >
@@ -26,7 +26,7 @@ export default function Home() {
             </Link>
             <Link href="/profile" className="font-medium hover:text-primary">
               Profile
-            </Link>
+            </Link> */}
           </nav>
           <div className="flex gap-2">
             <Link href="/login" passHref>
@@ -48,13 +48,13 @@ export default function Home() {
           <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                Master Programming with{" "}
+                Master Web3 with{" "}
                 <span className="text-primary">AI-Powered</span> Quizzes
               </h1>
               <p className="text-lg text-muted-foreground">
-                BYTEBATTLE generates fresh, challenging questions across various
-                programming languages, adapting to your skill level for a
-                personalized learning experience.
+                CryptoBrainz generates fresh, challenging questions across
+                various web3 topics, for a personalized learning and rewarding
+                experience.
               </p>
               <div className="flex gap-4 pt-4">
                 <Link href="/quiz/new" passHref>
@@ -69,7 +69,7 @@ export default function Home() {
                 </Link>
                 <Link href="/categories">
                   <Button size="lg" variant="outline">
-                    Explore Languages
+                    Explore Categories
                   </Button>
                 </Link>
               </div>
@@ -111,8 +111,9 @@ export default function Home() {
                 Powerful Features
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                BYTEBATTLE combines cutting-edge AI with engaging gameplay to
-                create a unique coding quiz experience
+                CryptoBrainz blends AI, Web3, and gamified learning to create a
+                unique blockchain knowledge challenge where you learn, compete,
+                and earn rewards.
               </p>
             </div>
 
@@ -122,11 +123,12 @@ export default function Home() {
                   <Brain className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
-                  AI-Generated Questions
+                  AI-Generated Web3 Quizzes
                 </h3>
                 <p className="text-muted-foreground">
-                  Our AI creates fresh, original coding questions that adapt to
-                  your skill level and learning pace
+                  Our AI crafts fresh, accurate, and up-to-date questions about
+                  blockchain, crypto, and DeFi — personalized to your knowledge
+                  level and learning path.
                 </p>
               </div>
 
@@ -135,24 +137,24 @@ export default function Home() {
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
-                  Personalized Learning
+                  Adaptive Learning Journey
                 </h3>
                 <p className="text-muted-foreground">
-                  Track your coding progress and receive personalized
-                  recommendations based on your performance
+                  Track your Web3 mastery and get tailored recommendations to
+                  strengthen weak areas. Every quiz helps you grow your crypto
+                  IQ.
                 </p>
               </div>
 
               <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow quiz-card">
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Trophy className="h-6 w-6 text-primary" />
+                  <Bitcoin className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
-                  Competitive Leaderboards
-                </h3>
+                <h3 className="text-xl font-semibold mb-2">On-Chain Rewards</h3>
                 <p className="text-muted-foreground">
-                  Compete with fellow coders and climb the global and
-                  language-specific leaderboards
+                  Pass all challenges and unlock real Web3 rewards. Smart
+                  contracts handle the reward distribution securely — you earn
+                  crypto for proving what you know.
                 </p>
               </div>
             </div>
@@ -163,16 +165,16 @@ export default function Home() {
         <section className="py-20 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Level Up Your Coding Skills?
+              Ready to Level Up Your Web3 Knowledge?
             </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-              Start your first coding quiz now and discover the power of
+              Start your first Web3 quiz now and discover the power of
               AI-generated learning
             </p>
             <Link href="/quiz/new">
               <Button size="lg" variant="secondary" className="gap-2">
                 <Zap className="h-5 w-5" />
-                Start Coding Quiz Now
+                Start Web3 Quiz Now
               </Button>
             </Link>
           </div>
@@ -184,7 +186,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <Brain className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">BYTEBATTLE</span>
+              <span className="text-xl font-bold">CRYPTOBRAINZ</span>
             </div>
             <div className="flex gap-8">
               <Link
@@ -214,7 +216,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-8 text-center text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BYTEBATTLE. All rights reserved.
+            &copy; {new Date().getFullYear()} CRYPTOBRAINZ. All rights reserved.
           </div>
         </div>
       </footer>
