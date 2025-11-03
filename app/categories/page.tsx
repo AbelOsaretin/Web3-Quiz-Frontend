@@ -125,10 +125,10 @@ export default function CategoriesPage() {
             </Link>
             {/* <Link href="/leaderboard" className="font-medium hover:text-primary">
               Leaderboard
-            </Link>
+            </Link>*/}
             <Link href="/profile" className="font-medium hover:text-primary">
               Profile
-            </Link> */}
+            </Link>
           </nav>
           <div className="flex gap-2">
             <Link href="/login">

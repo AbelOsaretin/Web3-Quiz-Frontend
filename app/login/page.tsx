@@ -1,50 +1,57 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Brain } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Brain } from "lucide-react";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     // For demo purposes, we'll simulate a successful login
     // In a real app, you would make an API call to authenticate
-    console.log("Login attempt with:", { email, password })
+    console.log("Login attempt with:", { email, password });
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // For demo, we'll accept any email with a password longer than 5 chars
       if (password.length < 6) {
-        throw new Error("Invalid credentials")
+        throw new Error("Invalid credentials");
       }
 
-      console.log("Login successful")
-      router.push("/profile")
+      console.log("Login successful");
+      router.push("/profile");
     } catch (err) {
-      console.error("Login failed:", err)
-      setError("Invalid email or password. Please try again.")
+      console.error("Login failed:", err);
+      setError("Invalid email or password. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -54,7 +61,7 @@ export default function LoginPage() {
             <Link href="/">
               <div className="flex items-center gap-2">
                 <Brain className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">BYTEBATTLE</h1>
+                <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
               </div>
             </Link>
           </div>
@@ -65,12 +72,20 @@ export default function LoginPage() {
         <div className="w-full max-w-md px-4">
           <Card>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-              <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
+              <CardTitle className="text-2xl font-bold text-center">
+                Login
+              </CardTitle>
+              <CardDescription className="text-center">
+                Enter your credentials to access your account
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
-                {error && <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm">{error}</div>}
+                {error && (
+                  <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm">
+                    {error}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -85,7 +100,10 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Password</Label>
-                    <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm text-primary hover:underline"
+                    >
                       Forgot password?
                     </Link>
                   </div>
@@ -114,7 +132,9 @@ export default function LoginPage() {
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -134,13 +154,14 @@ export default function LoginPage() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Brain className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">BYTEBATTLE</span>
+            <span className="text-xl font-bold">CRYPTO BRAINZ</span>
           </div>
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BYTEBATTLE. All rights reserved.
+            &copy; {new Date().getFullYear()} CRYPTO BRAINZ. All rights
+            reserved.
           </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
