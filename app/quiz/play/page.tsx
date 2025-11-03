@@ -35,6 +35,7 @@ export default function PlayQuizPage() {
   const [score, setScore] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [submissionResult, setSubmissionResult] = useState<any | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(timeLimit);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -147,14 +148,30 @@ export default function PlayQuizPage() {
         throw new Error(`submission failed: ${res.status} ${text}`);
       }
 
-      // if backend returns a score, use it
+      // parse backend response (try JSON, fall back to text)
       try {
-        const json = await res.json();
-        if (json && typeof json.score === "number") {
-          setScore(json.score);
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await res.json();
+          console.debug("submitQuiz response (json):", json);
+          setSubmissionResult(json);
+          if (json && typeof json.score === "number") {
+            setScore(json.score);
+          }
+        } else {
+          // non-json response: capture as text
+          const text = await res.text();
+          console.debug("submitQuiz response (text):", text);
+          setSubmissionResult(text);
         }
       } catch (e) {
-        // ignore JSON parse errors
+        console.warn("submitQuiz: failed to parse response", e);
+        try {
+          const text = await res.text();
+          setSubmissionResult(text);
+        } catch (ee) {
+          setSubmissionResult(null);
+        }
       }
     } catch (err: any) {
       console.error("Submit quiz error:", err);
@@ -249,6 +266,16 @@ export default function PlayQuizPage() {
         <main className="flex-1 py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto">
+              {submissionResult && (
+                <div className="mb-4">
+                  <h4 className="font-medium mb-2">Server response (debug)</h4>
+                  <pre className="p-3 bg-muted/20 rounded text-sm overflow-auto">
+                    {typeof submissionResult === "string"
+                      ? submissionResult
+                      : JSON.stringify(submissionResult, null, 2)}
+                  </pre>
+                </div>
+              )}
               <Card className="overflow-hidden">
                 <div
                   className="bg-primary h-2"
@@ -311,6 +338,78 @@ export default function PlayQuizPage() {
                   {submissionError && (
                     <div className="text-center text-sm text-destructive">
                       Submission error: {submissionError}
+                    </div>
+                  )}
+
+                  {/* Show webhook response if present */}
+                  {submissionResult && Array.isArray(submissionResult) && (
+                    <div className="mt-4">
+                      {/** backend returns an array with { data: [...] } objects **/}
+                      {(submissionResult as any[]).map((block, i) => (
+                        <div key={i} className="mb-4">
+                          {block?.data && Array.isArray(block.data) && (
+                            <div className="space-y-3">
+                              {block.data.length > 0 &&
+                              block.data[0].Reward_Amount ? (
+                                <div className="p-4 border rounded">
+                                  <h4 className="font-semibold mb-2">
+                                    Reward Claim
+                                  </h4>
+                                  <div className="text-sm">
+                                    <div>
+                                      <strong>Quiz Attempt ID:</strong>{" "}
+                                      {block.data[0].Quiz_Attempt_ID}
+                                    </div>
+                                    <div>
+                                      <strong>Reward Amount (wei):</strong>{" "}
+                                      {block.data[0].Reward_Amount}
+                                    </div>
+                                    <div>
+                                      <strong>Raw Claim ID:</strong>{" "}
+                                      {block.data[0].Raw_Claim_ID}
+                                    </div>
+                                    <div>
+                                      <strong>Signature:</strong>{" "}
+                                      <code className="break-all">
+                                        {block.data[0].Signature}
+                                      </code>
+                                    </div>
+                                    <div>
+                                      <strong>Status:</strong>{" "}
+                                      {block.data[0].Status}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-4 border rounded">
+                                  <h4 className="font-semibold mb-2">
+                                    Failed Questions
+                                  </h4>
+                                  <div className="text-sm space-y-2">
+                                    <div>
+                                      <strong>Total Passed:</strong>{" "}
+                                      {block.data[0]?.Total_Passed ?? "-"}
+                                    </div>
+                                    <div>
+                                      <strong>Total Failed:</strong>{" "}
+                                      {block.data[0]?.Total_Failed ?? "-"}
+                                    </div>
+                                    <ul className="list-disc list-inside mt-2">
+                                      {block.data.map((q: any, idx: number) => (
+                                        <li key={idx}>
+                                          <strong>ID:</strong>{" "}
+                                          {q.Failed_Question_ID} —{" "}
+                                          {q.Failed_Questions_Text}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
 
