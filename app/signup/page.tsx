@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Brain } from "lucide-react";
+import AuthToggle from "@/components/AuthToggle";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -47,10 +48,11 @@ export default function SignupPage() {
         typeof window !== "undefined"
           ? `${window.location.origin}/profile`
           : undefined;
-      const { data, error: signUpError } = await supabase.auth.signUp(
-        { email, password },
-        { emailRedirectTo: redirectTo } as any
-      );
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectTo } as any,
+      } as any);
 
       if (signUpError) {
         console.error("signUpError:", signUpError);
@@ -106,9 +108,7 @@ export default function SignupPage() {
             <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
           </div>
           <div className="flex gap-2">
-            <Link href="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
+            <AuthToggle />
           </div>
         </div>
       </header>

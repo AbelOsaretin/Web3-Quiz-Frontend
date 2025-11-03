@@ -20,6 +20,7 @@ import {
   PieChart,
   Brain,
 } from "lucide-react";
+import AuthToggle from "@/components/AuthToggle";
 
 const categories = [
   {
@@ -130,14 +131,7 @@ export default function CategoriesPage() {
               Profile
             </Link>
           </nav>
-          <div className="flex gap-2">
-            <Link href="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          </div>
+          <AuthToggle />
         </div>
       </header>
 

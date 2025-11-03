@@ -1,21 +1,82 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, Trophy, Medal, Award } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import AuthToggle from "@/components/AuthToggle";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Brain, Trophy, Medal, Award } from "lucide-react";
 
 // Mock data for leaderboard
 const leaderboardData = [
-  { id: "1", name: "Alex Johnson", score: 9850, quizzesTaken: 42, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "2", name: "Jamie Smith", score: 8720, quizzesTaken: 38, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "3", name: "Taylor Brown", score: 8450, quizzesTaken: 35, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "4", name: "Jordan Wilson", score: 7980, quizzesTaken: 31, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "5", name: "Casey Miller", score: 7650, quizzesTaken: 29, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "6", name: "Riley Davis", score: 7320, quizzesTaken: 27, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "7", name: "Morgan Lee", score: 6890, quizzesTaken: 25, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "8", name: "Quinn Taylor", score: 6540, quizzesTaken: 23, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "9", name: "Avery Martin", score: 6210, quizzesTaken: 21, avatar: "/placeholder.svg?height=40&width=40" },
-  { id: "10", name: "Reese Clark", score: 5980, quizzesTaken: 19, avatar: "/placeholder.svg?height=40&width=40" },
-]
+  {
+    id: "1",
+    name: "Alex Johnson",
+    score: 9850,
+    quizzesTaken: 42,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "2",
+    name: "Jamie Smith",
+    score: 8720,
+    quizzesTaken: 38,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "3",
+    name: "Taylor Brown",
+    score: 8450,
+    quizzesTaken: 35,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "4",
+    name: "Jordan Wilson",
+    score: 7980,
+    quizzesTaken: 31,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "5",
+    name: "Casey Miller",
+    score: 7650,
+    quizzesTaken: 29,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "6",
+    name: "Riley Davis",
+    score: 7320,
+    quizzesTaken: 27,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "7",
+    name: "Morgan Lee",
+    score: 6890,
+    quizzesTaken: 25,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "8",
+    name: "Quinn Taylor",
+    score: 6540,
+    quizzesTaken: 23,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "9",
+    name: "Avery Martin",
+    score: 6210,
+    quizzesTaken: 21,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: "10",
+    name: "Reese Clark",
+    score: 5980,
+    quizzesTaken: 19,
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+];
 
 // Mock data for category leaders
 const categoryLeaders = [
@@ -23,7 +84,7 @@ const categoryLeaders = [
   { category: "Technology", name: "Jamie Smith", score: 2180 },
   { category: "History", name: "Taylor Brown", score: 1950 },
   { category: "Geography", name: "Jordan Wilson", score: 1820 },
-]
+];
 
 export default function LeaderboardPage() {
   return (
@@ -52,14 +113,7 @@ export default function LeaderboardPage() {
               Profile
             </Link>
           </nav>
-          <div className="flex gap-2">
-            <Link href="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          </div>
+          <AuthToggle />
         </div>
       </header>
 
@@ -68,7 +122,8 @@ export default function LeaderboardPage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">Leaderboard</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              See how you stack up against other BYTEBATTLE players from around the world
+              See how you stack up against other BYTEBATTLE players from around
+              the world
             </p>
           </div>
 
@@ -78,10 +133,22 @@ export default function LeaderboardPage() {
               {leaderboardData.slice(0, 3).map((player, index) => (
                 <Card
                   key={player.id}
-                  className={`overflow-hidden ${index === 0 ? "border-yellow-400 border-2" : index === 1 ? "border-gray-400 border-2" : "border-amber-700 border-2"}`}
+                  className={`overflow-hidden ${
+                    index === 0
+                      ? "border-yellow-400 border-2"
+                      : index === 1
+                      ? "border-gray-400 border-2"
+                      : "border-amber-700 border-2"
+                  }`}
                 >
                   <div
-                    className={`h-2 ${index === 0 ? "bg-yellow-400" : index === 1 ? "bg-gray-400" : "bg-amber-700"}`}
+                    className={`h-2 ${
+                      index === 0
+                        ? "bg-yellow-400"
+                        : index === 1
+                        ? "bg-gray-400"
+                        : "bg-amber-700"
+                    }`}
                   ></div>
                   <CardHeader className="flex flex-row items-center gap-4">
                     <div
@@ -89,8 +156,8 @@ export default function LeaderboardPage() {
                         index === 0
                           ? "bg-yellow-100 text-yellow-600"
                           : index === 1
-                            ? "bg-gray-100 text-gray-600"
-                            : "bg-amber-100 text-amber-600"
+                          ? "bg-gray-100 text-gray-600"
+                          : "bg-amber-100 text-amber-600"
                       }`}
                     >
                       {index === 0 ? (
@@ -103,18 +170,24 @@ export default function LeaderboardPage() {
                     </div>
                     <div>
                       <CardTitle className="text-xl">{player.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">Rank #{index + 1}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Rank #{index + 1}
+                      </p>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4 text-center">
                       <div>
                         <p className="text-sm text-muted-foreground">Score</p>
-                        <p className="text-2xl font-bold">{player.score.toLocaleString()}</p>
+                        <p className="text-2xl font-bold">
+                          {player.score.toLocaleString()}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Quizzes</p>
-                        <p className="text-2xl font-bold">{player.quizzesTaken}</p>
+                        <p className="text-2xl font-bold">
+                          {player.quizzesTaken}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -133,9 +206,13 @@ export default function LeaderboardPage() {
                     {leaderboardData.map((player, index) => (
                       <div
                         key={player.id}
-                        className={`flex items-center gap-4 p-3 rounded-lg ${index < 3 ? "bg-muted/50" : ""}`}
+                        className={`flex items-center gap-4 p-3 rounded-lg ${
+                          index < 3 ? "bg-muted/50" : ""
+                        }`}
                       >
-                        <div className="w-8 text-center font-bold text-muted-foreground">#{index + 1}</div>
+                        <div className="w-8 text-center font-bold text-muted-foreground">
+                          #{index + 1}
+                        </div>
                         <div className="w-10 h-10 rounded-full overflow-hidden">
                           <img
                             src={player.avatar || "/placeholder.svg"}
@@ -145,11 +222,17 @@ export default function LeaderboardPage() {
                         </div>
                         <div className="flex-1">
                           <p className="font-medium">{player.name}</p>
-                          <p className="text-sm text-muted-foreground">{player.quizzesTaken} quizzes</p>
+                          <p className="text-sm text-muted-foreground">
+                            {player.quizzesTaken} quizzes
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">{player.score.toLocaleString()}</p>
-                          <p className="text-sm text-muted-foreground">points</p>
+                          <p className="font-bold">
+                            {player.score.toLocaleString()}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            points
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -167,11 +250,18 @@ export default function LeaderboardPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {categoryLeaders.map((leader) => (
-                      <div key={leader.category} className="p-3 rounded-lg bg-muted/50">
-                        <p className="text-sm text-muted-foreground">{leader.category}</p>
+                      <div
+                        key={leader.category}
+                        className="p-3 rounded-lg bg-muted/50"
+                      >
+                        <p className="text-sm text-muted-foreground">
+                          {leader.category}
+                        </p>
                         <div className="flex justify-between items-center mt-1">
                           <p className="font-medium">{leader.name}</p>
-                          <p className="font-bold">{leader.score.toLocaleString()}</p>
+                          <p className="font-bold">
+                            {leader.score.toLocaleString()}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -185,7 +275,9 @@ export default function LeaderboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-6">
-                    <p className="text-muted-foreground mb-4">Sign in to see your ranking</p>
+                    <p className="text-muted-foreground mb-4">
+                      Sign in to see your ranking
+                    </p>
                     <Link href="/login">
                       <Button>Login</Button>
                     </Link>
@@ -209,5 +301,5 @@ export default function LeaderboardPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

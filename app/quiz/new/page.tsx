@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Brain, ArrowRight, Clock, BarChart3 } from "lucide-react";
+import AuthToggle from "@/components/AuthToggle";
 
 export default function NewQuizPage() {
   const router = useRouter();
@@ -112,14 +113,7 @@ export default function NewQuizPage() {
               Profile
             </Link> */}
           </nav>
-          <div className="flex gap-2">
-            <Link href="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          </div>
+          <AuthToggle />
         </div>
       </header>
 

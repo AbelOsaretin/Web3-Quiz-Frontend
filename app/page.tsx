@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import AuthToggle from "@/components/AuthToggle";
 import { Brain, Zap, DollarSign, BarChart3 } from "lucide-react";
 
 export default function Home() {
@@ -28,16 +29,7 @@ export default function Home() {
               Profile
             </Link>
           </nav>
-          <div className="flex gap-2">
-            <Link href="/login" passHref>
-              <Button variant="outline" as="a">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup" passHref>
-              <Button as="a">Sign Up</Button>
-            </Link>
-          </div>
+          <AuthToggle />
         </div>
       </header>
 
