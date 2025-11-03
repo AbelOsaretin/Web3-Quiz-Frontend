@@ -1,5 +1,10 @@
+"use client";
+
+import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabaseClient";
 import {
   Card,
   CardContent,
@@ -105,6 +110,27 @@ const categories = [
 ];
 
 export default function CategoriesPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const user = data?.user ?? null;
+        if (!user && mounted) {
+          router.push("/login");
+        }
+      } catch (e) {
+        console.error("auth check failed:", e);
+        if (mounted) router.push("/login");
+      }
+    };
+    check();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b">

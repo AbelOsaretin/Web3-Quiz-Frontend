@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,26 @@ import AuthToggle from "@/components/AuthToggle";
 
 export default function NewQuizPage() {
   const router = useRouter();
+  // redirect to login if unauthenticated
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      try {
+        const { data } = await (
+          await import("@/lib/supabaseClient")
+        ).supabase.auth.getUser();
+        const user = data?.user ?? null;
+        if (!user && mounted) router.push("/login");
+      } catch (e) {
+        console.error("auth check failed:", e);
+        if (mounted) router.push("/login");
+      }
+    };
+    check();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
   const searchParams = useSearchParams();
   const preselectedCategory = searchParams.get("category");
 

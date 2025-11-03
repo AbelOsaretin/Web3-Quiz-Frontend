@@ -71,6 +71,14 @@ export default function AuthToggle() {
   if (user) {
     return (
       <div className="flex gap-2">
+        <Button
+          variant="outline"
+          onClick={() => {
+            console.log("Wallet Connect");
+          }}
+        >
+          Wallet Connect
+        </Button>
         <Button variant="outline" onClick={handleSignOut}>
           Logout
         </Button>

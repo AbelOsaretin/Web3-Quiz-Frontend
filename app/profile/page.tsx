@@ -144,6 +144,18 @@ export default function ProfilePage() {
           fetchForUser(uid);
           return;
         }
+        // if there's no authenticated user, redirect to login
+        if (mounted) {
+          // check localStorage fallback first
+          const stored =
+            typeof window !== "undefined"
+              ? localStorage.getItem("userId")
+              : null;
+          if (!stored) {
+            router.push("/login");
+            return;
+          }
+        }
       } catch (err) {
         console.error("getUser error:", err);
       }
@@ -193,6 +205,14 @@ export default function ProfilePage() {
             </Link>
           </nav>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                console.log("Wallet Connect");
+              }}
+            >
+              Wallet Connect
+            </Button>
             <Button
               variant="outline"
               onClick={async () => {

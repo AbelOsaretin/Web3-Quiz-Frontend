@@ -21,6 +21,27 @@ export default function PlayQuizPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // redirect to login if unauthenticated
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      try {
+        const { data } = await (
+          await import("@/lib/supabaseClient")
+        ).supabase.auth.getUser();
+        const user = data?.user ?? null;
+        if (!user && mounted) router.push("/login");
+      } catch (e) {
+        console.error("auth check failed:", e);
+        if (mounted) router.push("/login");
+      }
+    };
+    check();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
   const category = searchParams.get("category") || "general";
   const difficulty = searchParams.get("difficulty") || "medium";
   const count = Number.parseInt(searchParams.get("count") || "10", 10);
