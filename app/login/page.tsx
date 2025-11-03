@@ -139,12 +139,37 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" type="button">
-                  Google
-                </Button>
-                <Button variant="outline" type="button">
-                  GitHub
+              <div className="grid grid-cols-1 gap-4">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={async () => {
+                    setError("");
+                    setIsLoading(true);
+                    try {
+                      const redirectTo =
+                        typeof window !== "undefined"
+                          ? `${window.location.origin}/profile`
+                          : undefined;
+                      const { data, error } =
+                        await supabase.auth.signInWithOAuth({
+                          provider: "google",
+                          options: { redirectTo } as any,
+                        });
+                      if (error) {
+                        console.error("OAuth error:", error);
+                        setError(error.message ?? "Google sign-in failed");
+                      }
+                      // Supabase will redirect the browser to Google's consent screen.
+                    } catch (e) {
+                      console.error("Failed to start Google OAuth:", e);
+                      setError("Failed to start Google sign-in");
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                >
+                  {isLoading ? "Starting..." : "Continue with Google"}
                 </Button>
               </div>
             </CardFooter>

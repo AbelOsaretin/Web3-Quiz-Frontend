@@ -86,15 +86,81 @@ export default function ProfilePage() {
     }
   }
 
-  // On mount: if a userId is stored in localStorage, use it to auto-load data
+  // On mount: if the user is signed in with Supabase (including OAuth), ensure
+  // there's a corresponding row in Web3_Quiz_User_Data and load their data.
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = localStorage.getItem("userId");
-    if (stored) {
-      setUserIdInput(stored);
-      // kick off fetch; don't await here
-      fetchForUser(stored);
-    }
+    let mounted = true;
+
+    const init = async () => {
+      // try to get Supabase user session first
+      try {
+        const {
+          data: { user },
+          error: uErr,
+        }: any = await supabase.auth.getUser();
+
+        if (uErr) console.warn("auth.getUser error:", uErr);
+
+        if (user && mounted) {
+          const uid = user.id as string;
+          setUserIdInput(uid);
+          // persist for legacy parts of app that read localStorage
+          if (typeof window !== "undefined")
+            localStorage.setItem("userId", uid);
+
+          // ensure a row exists in Web3_Quiz_User_Data
+          try {
+            const { data: existing, error: checkErr } = await supabase
+              .from("Web3_Quiz_User_Data")
+              .select("id")
+              .eq("User_ID", uid)
+              .maybeSingle();
+            if (checkErr) {
+              console.warn("check user data error:", checkErr);
+            }
+            if (!existing) {
+              // insert a new record with available metadata
+              const displayName =
+                (user.user_metadata &&
+                  (user.user_metadata.name || user.user_metadata.full_name)) ||
+                user.email ||
+                "";
+              const { error: insertErr } = await supabase
+                .from("Web3_Quiz_User_Data")
+                .insert([
+                  {
+                    User_ID: uid,
+                    Name: displayName,
+                    Email: user.email ?? null,
+                  },
+                ]);
+              if (insertErr) console.warn("insert user data error:", insertErr);
+            }
+          } catch (e) {
+            console.error("ensure user record error:", e);
+          }
+
+          // finally load user-specific data
+          fetchForUser(uid);
+          return;
+        }
+      } catch (err) {
+        console.error("getUser error:", err);
+      }
+
+      // fallback: use localStorage if no authenticated session
+      if (typeof window === "undefined") return;
+      const stored = localStorage.getItem("userId");
+      if (stored) {
+        setUserIdInput(stored);
+        fetchForUser(stored);
+      }
+    };
+
+    init();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
