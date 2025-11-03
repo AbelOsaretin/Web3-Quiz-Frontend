@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabaseClient";
 import {
   Card,
   CardContent,
@@ -14,11 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Brain, User, Trophy } from "lucide-react";
 
-// Supabase client (uses NEXT_PUBLIC_ env vars)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
-);
+// Using shared Supabase client from lib/supabaseClient.ts
 
 // Notes / assumptions:
 // - Tables are named: `users`, `user_rewards`, `user_quiz_history`.
@@ -27,6 +24,7 @@ const supabase = createClient(
 // If your table names / columns differ, update the queries below accordingly.
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("history");
   const [userIdInput, setUserIdInput] = useState("U001");
   const [userData, setUserData] = useState<any>({ data: [] });
@@ -87,7 +85,17 @@ export default function ProfilePage() {
       setLoading(false);
     }
   }
-  console.log(userData);
+
+  // On mount: if a userId is stored in localStorage, use it to auto-load data
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem("userId");
+    if (stored) {
+      setUserIdInput(stored);
+      // kick off fetch; don't await here
+      fetchForUser(stored);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -119,7 +127,23 @@ export default function ProfilePage() {
             </Link>
           </nav>
           <div className="flex gap-2">
-            <Button variant="outline">Logout</Button>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                try {
+                  await supabase.auth.signOut();
+                } catch (e) {
+                  console.error("Sign out error:", e);
+                }
+                // clear local userId used elsewhere
+                if (typeof window !== "undefined") {
+                  localStorage.removeItem("userId");
+                }
+                router.push("/");
+              }}
+            >
+              Logout
+            </Button>
           </div>
         </div>
       </header>
@@ -137,7 +161,7 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">{userData.data.Email}</p>
               </div>
               <div className="flex gap-2 items-center">
-                <input
+                {/* <input
                   value={userIdInput}
                   onChange={(e) => setUserIdInput(e.target.value)}
                   className="border rounded px-2 py-1 text-sm"
@@ -145,7 +169,7 @@ export default function ProfilePage() {
                 />
                 <Button onClick={() => fetchForUser(userIdInput)}>
                   {loading ? "Loading..." : "Load"}
-                </Button>
+                </Button> */}
                 <Link href="/categories">
                   <Button>Start New Quiz</Button>
                 </Link>

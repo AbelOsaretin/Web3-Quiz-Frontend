@@ -6,6 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabaseClient";
 import {
   Card,
   CardContent,
@@ -29,25 +30,26 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    // For demo purposes, we'll simulate a successful login
-    // In a real app, you would make an API call to authenticate
-    console.log("Login attempt with:", { email, password });
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Use Supabase Auth to sign in with email & password
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // For demo, we'll accept any email with a password longer than 5 chars
-      if (password.length < 6) {
-        throw new Error("Invalid credentials");
+      if (error) throw error;
+
+      // Persist userId for parts of the app that rely on localStorage
+      if (data?.user?.id) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("userId", data.user.id);
+        }
       }
 
-      console.log("Login successful");
       router.push("/profile");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login failed:", err);
-      setError("Invalid email or password. Please try again.");
+      setError(err?.message ?? "Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
     }
