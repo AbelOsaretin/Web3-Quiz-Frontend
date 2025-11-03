@@ -11,54 +11,84 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Brain,
-  User,
-  BarChart3,
-  Trophy,
-  Calendar,
-  ArrowUpRight,
-} from "lucide-react";
+import { Brain, User, Trophy } from "lucide-react";
 
-// Mock user data
-const userData = {
-  name: "Alex Johnson",
-  email: "alex@example.com",
-  joinDate: "Jan 2023",
-  totalScore: 9850,
-  quizzesTaken: 42,
-  averageScore: 85,
-  badges: [
-    "Science Expert",
-    "History Buff",
-    "Quiz Master",
-    "Perfect Score",
-    "Speed Demon",
-  ],
-  recentQuizzes: [
-    { id: "1", category: "Science", score: 9, total: 10, date: "2023-03-01" },
-    { id: "2", category: "History", score: 8, total: 10, date: "2023-02-28" },
+const userRewards = {
+  data: [
     {
-      id: "3",
-      category: "Technology",
-      score: 10,
-      total: 10,
-      date: "2023-02-25",
+      id: 1,
+      created_at: "2025-11-03T10:00:00+00:00",
+      User_ID: "U001",
+      User_Wallet_Address: "0xABC...",
+      Reward_Amount: 1000,
+      Quiz_Attempt_ID: null,
+      Raw_Claim_ID: null,
+      Signature: null,
+      Status: "Unclaimed",
     },
-    { id: "4", category: "Geography", score: 7, total: 10, date: "2023-02-20" },
-  ],
-  categoryPerformance: [
-    { category: "Science", score: 92 },
-    { category: "History", score: 88 },
-    { category: "Technology", score: 95 },
-    { category: "Geography", score: 78 },
-    { category: "Entertainment", score: 82 },
+    {
+      id: 2,
+      created_at: "2025-11-03T10:05:00+00:00",
+      User_ID: "U002",
+      User_Wallet_Address: "0xDEF...",
+      Reward_Amount: 1500,
+      Quiz_Attempt_ID: null,
+      Raw_Claim_ID: null,
+      Signature: null,
+      Status: "Claimed",
+    },
+    // ... up to 10 rows
   ],
 };
 
+const userQuizHistory = {
+  data: [
+    {
+      id: 1,
+      created_at: "2025-11-03T10:15:00+00:00",
+      User_ID: "U001",
+      Quiz_Attempt_ID: "ATTEMPT_123",
+      Total_Passed: 1,
+      Total_Failed: 9,
+      Failed_Questions_Text: "Question 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      Failed_Question_ID: "Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10",
+      Quiz_Category: "Blockchain Basics",
+      Total_Question: 10,
+    },
+    {
+      id: 2,
+      created_at: "2025-11-03T10:20:00+00:00",
+      User_ID: "U002",
+      Quiz_Attempt_ID: "ATTEMPT_456",
+      Total_Passed: 8,
+      Total_Failed: 2,
+      Failed_Questions_Text: "Question 1, 4",
+      Failed_Question_ID: "Q1,Q4",
+      Quiz_Category: "Smart Contracts",
+      Total_Question: 10,
+    },
+    {
+      id: 3,
+      created_at: "2025-11-03T10:25:00+00:00",
+      User_ID: "U003",
+      Quiz_Attempt_ID: "ATTEMPT_789",
+      Total_Passed: 10,
+      Total_Failed: 0,
+      Failed_Questions_Text: null,
+      Failed_Question_ID: null,
+      Quiz_Category: "DeFi",
+      Total_Question: 10,
+    },
+  ],
+};
+
+const userData = {
+  name: "Alex",
+  email: "alex@example.com",
+};
+
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("history");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -106,20 +136,6 @@ export default function ProfilePage() {
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl font-bold">{userData.name}</h1>
                 <p className="text-muted-foreground">{userData.email}</p>
-                <div className="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
-                  <Badge variant="outline" className="gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Joined {userData.joinDate}
-                  </Badge>
-                  <Badge variant="outline" className="gap-1">
-                    <Trophy className="h-3 w-3" />
-                    {userData.totalScore.toLocaleString()} points
-                  </Badge>
-                  <Badge variant="outline" className="gap-1">
-                    <BarChart3 className="h-3 w-3" />
-                    {userData.quizzesTaken} quizzes
-                  </Badge>
-                </div>
               </div>
               <div className="flex gap-2">
                 <Link href="/categories">
@@ -130,16 +146,6 @@ export default function ProfilePage() {
 
             {/* Profile Tabs */}
             <div className="flex border-b mb-8">
-              <button
-                className={`px-4 py-2 font-medium ${
-                  activeTab === "overview"
-                    ? "border-b-2 border-primary text-primary"
-                    : "text-muted-foreground"
-                }`}
-                onClick={() => setActiveTab("overview")}
-              >
-                Overview
-              </button>
               <button
                 className={`px-4 py-2 font-medium ${
                   activeTab === "history"
@@ -163,201 +169,48 @@ export default function ProfilePage() {
             </div>
 
             {/* Tab Content */}
-            {activeTab === "overview" && (
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Total Score
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">
-                        {userData.totalScore.toLocaleString()}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Quizzes Taken
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">
-                        {userData.quizzesTaken}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Average Score
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">
-                        {userData.averageScore}%
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Global Rank
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">#42</div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Category Performance */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Category Performance</CardTitle>
-                    <CardDescription>
-                      Your average scores by category
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {userData.categoryPerformance.map((category) => (
-                        <div key={category.category}>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium">
-                              {category.category}
-                            </span>
-                            <span className="text-sm font-medium">
-                              {category.score}%
-                            </span>
-                          </div>
-                          <div className="w-full bg-muted rounded-full h-2.5">
-                            <div
-                              className="bg-primary h-2.5 rounded-full"
-                              style={{ width: `${category.score}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Recent Quizzes */}
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle>Recent Quizzes</CardTitle>
-                      <Link href="/profile/history">
-                        <Button variant="ghost" size="sm" className="gap-1">
-                          View All
-                          <ArrowUpRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {userData.recentQuizzes.map((quiz) => (
-                        <div
-                          key={quiz.id}
-                          className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                        >
-                          <div>
-                            <p className="font-medium">{quiz.category}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(quiz.date).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold">
-                              {quiz.score}/{quiz.total}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {Math.round((quiz.score / quiz.total) * 100)}%
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Badges */}
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Achievements</CardTitle>
-                    <CardDescription>
-                      Badges you've earned through quizzing
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {userData.badges.map((badge) => (
-                        <Badge
-                          key={badge}
-                          variant="secondary"
-                          className="px-3 py-1"
-                        >
-                          {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
 
             {activeTab === "history" && (
               <Card>
                 <CardHeader>
                   <CardTitle>Quiz History</CardTitle>
-                  <CardDescription>All quizzes you've taken</CardDescription>
+                  <CardDescription>All quizzes you've failed</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[...userData.recentQuizzes, ...userData.recentQuizzes].map(
-                      (quiz, index) => (
-                        <div
-                          key={`${quiz.id}-${index}`}
-                          className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
-                        >
-                          <div>
-                            <p className="font-medium">{quiz.category}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(quiz.date).toLocaleDateString("en-US", {
+                    {userQuizHistory.data.map((quiz) => (
+                      <div
+                        key={quiz.id}
+                        className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-medium">{quiz.Quiz_Category}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(quiz.created_at).toLocaleDateString(
+                              "en-US",
+                              {
                                 year: "numeric",
                                 month: "short",
                                 day: "numeric",
-                              })}
+                              }
+                            )}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="font-bold">
+                              {quiz.Total_Passed}/{quiz.Total_Question}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {Math.round(
+                                (quiz.Total_Passed / quiz.Total_Question) * 100
+                              )}
+                              %
                             </p>
                           </div>
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <p className="font-bold">
-                                {quiz.score}/{quiz.total}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {Math.round((quiz.score / quiz.total) * 100)}%
-                              </p>
-                            </div>
-                            <Link href={`/quiz/results/${quiz.id}`}>
-                              <Button variant="outline" size="sm">
-                                View Details
-                              </Button>
-                            </Link>
-                          </div>
                         </div>
-                      )
-                    )}
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-center">
@@ -370,57 +223,75 @@ export default function ProfilePage() {
               <div className="grid md:grid-cols-2 gap-8">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Earned Badges</CardTitle>
+                    <CardTitle>Claim Reward</CardTitle>
                     <CardDescription>
-                      Achievements you've unlocked
+                      You can only claim one reward.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
-                      {userData.badges.map((badge) => (
-                        <div
-                          key={badge}
-                          className="bg-muted/50 rounded-lg p-4 text-center"
-                        >
-                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                            <Trophy className="h-6 w-6 text-primary" />
+                      {userRewards.data
+                        ?.filter((reward) => reward.Status === "Unclaimed") // 👈 Only show unclaimed rewards
+                        .map((reward) => (
+                          <div
+                            key={reward.id}
+                            className="bg-muted/50 rounded-lg p-4 text-center"
+                          >
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                              <Trophy className="h-6 w-6 text-primary" />
+                            </div>
+                            <p className="font-medium">
+                              ${reward.Reward_Amount}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Earned on{" "}
+                              {new Date(reward.created_at).toLocaleDateString()}
+                            </p>
+                            <br />
+                            <Button
+                              onClick={() =>
+                                console.log(
+                                  reward.User_ID,
+                                  reward.Quiz_Attempt_ID,
+                                  reward.Reward_Amount,
+                                  reward.Raw_Claim_ID,
+                                  reward.Signature
+                                )
+                              }
+                            >
+                              Get Reward
+                            </Button>
                           </div>
-                          <p className="font-medium">{badge}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Earned on Feb 28, 2023
-                          </p>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Available Badges</CardTitle>
-                    <CardDescription>Achievements to unlock</CardDescription>
+                    <CardTitle>Claimed Rewards</CardTitle>
+                    <CardDescription>Rewards you've claimed</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
-                      {[
-                        "Geography Pro",
-                        "Music Maestro",
-                        "Entertainment Guru",
-                        "100 Quizzes",
-                      ].map((badge) => (
-                        <div
-                          key={badge}
-                          className="bg-muted/50 rounded-lg p-4 text-center opacity-60"
-                        >
-                          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
-                            <Trophy className="h-6 w-6 text-muted-foreground" />
+                      {userRewards.data
+                        ?.filter((reward) => reward.Status === "Claimed") // 👈 Only show unclaimed rewards
+                        .map((reward) => (
+                          <div
+                            key={reward.id}
+                            className="bg-muted/50 rounded-lg p-4 text-center opacity-60"
+                          >
+                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
+                              <Trophy className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <p className="font-medium">
+                              {reward.Reward_Amount}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Claimed
+                            </p>
                           </div>
-                          <p className="font-medium">{badge}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Not yet earned
-                          </p>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
