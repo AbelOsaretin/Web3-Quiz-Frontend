@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@supabase/supabase-js";
 import {
   Card,
   CardContent,
@@ -13,82 +14,80 @@ import {
 } from "@/components/ui/card";
 import { Brain, User, Trophy } from "lucide-react";
 
-const userRewards = {
-  data: [
-    {
-      id: 1,
-      created_at: "2025-11-03T10:00:00+00:00",
-      User_ID: "U001",
-      User_Wallet_Address: "0xABC...",
-      Reward_Amount: 1000,
-      Quiz_Attempt_ID: null,
-      Raw_Claim_ID: null,
-      Signature: null,
-      Status: "Unclaimed",
-    },
-    {
-      id: 2,
-      created_at: "2025-11-03T10:05:00+00:00",
-      User_ID: "U002",
-      User_Wallet_Address: "0xDEF...",
-      Reward_Amount: 1500,
-      Quiz_Attempt_ID: null,
-      Raw_Claim_ID: null,
-      Signature: null,
-      Status: "Claimed",
-    },
-    // ... up to 10 rows
-  ],
-};
+// Supabase client (uses NEXT_PUBLIC_ env vars)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
+);
 
-const userQuizHistory = {
-  data: [
-    {
-      id: 1,
-      created_at: "2025-11-03T10:15:00+00:00",
-      User_ID: "U001",
-      Quiz_Attempt_ID: "ATTEMPT_123",
-      Total_Passed: 1,
-      Total_Failed: 9,
-      Failed_Questions_Text: "Question 2, 3, 4, 5, 6, 7, 8, 9, 10",
-      Failed_Question_ID: "Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10",
-      Quiz_Category: "Blockchain Basics",
-      Total_Question: 10,
-    },
-    {
-      id: 2,
-      created_at: "2025-11-03T10:20:00+00:00",
-      User_ID: "U002",
-      Quiz_Attempt_ID: "ATTEMPT_456",
-      Total_Passed: 8,
-      Total_Failed: 2,
-      Failed_Questions_Text: "Question 1, 4",
-      Failed_Question_ID: "Q1,Q4",
-      Quiz_Category: "Smart Contracts",
-      Total_Question: 10,
-    },
-    {
-      id: 3,
-      created_at: "2025-11-03T10:25:00+00:00",
-      User_ID: "U003",
-      Quiz_Attempt_ID: "ATTEMPT_789",
-      Total_Passed: 10,
-      Total_Failed: 0,
-      Failed_Questions_Text: null,
-      Failed_Question_ID: null,
-      Quiz_Category: "DeFi",
-      Total_Question: 10,
-    },
-  ],
-};
-
-const userData = {
-  name: "Alex",
-  email: "alex@example.com",
-};
+// Notes / assumptions:
+// - Tables are named: `users`, `user_rewards`, `user_quiz_history`.
+// - Each table has a column that identifies the user. For `users` it's `id`.
+// - For rewards and quiz history the column is `User_ID` (matching the mock data keys).
+// If your table names / columns differ, update the queries below accordingly.
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("history");
+  const [userIdInput, setUserIdInput] = useState("U001");
+  const [userData, setUserData] = useState<any>({ data: [] });
+  const [userRewards, setUserRewards] = useState<any>({ data: [] });
+  const [userQuizHistory, setUserQuizHistory] = useState<any>({ data: [] });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch three tables filtered by a user ID
+  async function fetchForUser(userId: string) {
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      // users
+      const { data: uData, error: uErr } = await supabase
+        .from("Web3_Quiz_User_Data")
+        .select("*")
+        .eq("User_ID", userId)
+        .maybeSingle();
+      if (uErr) {
+        console.error("users fetch error:", uErr);
+        setError("Failed to fetch user data");
+      } else if (uData) {
+        setUserData({ data: uData });
+      } else {
+        setUserData({ data: uData ?? [] });
+      }
+
+      // user_rewards
+      const { data: rewards, error: rErr } = await supabase
+        .from("Web3_Quiz_User_Reward")
+        .select("*")
+        .eq("User_ID", userId);
+      if (rErr) {
+        console.error("rewards fetch error:", rErr);
+        setError((prev) => prev ?? "Failed to fetch rewards");
+      } else {
+        setUserRewards({ data: rewards ?? [] });
+      }
+
+      // user_quiz_history
+      const { data: history, error: hErr } = await supabase
+        .from("Web3_Quiz_User_Result")
+        .select("*")
+        .eq("User_ID", userId);
+      if (hErr) {
+        console.error("history fetch error:", hErr);
+        setError((prev) => prev ?? "Failed to fetch quiz history");
+      } else {
+        setUserQuizHistory({ data: history ?? [] });
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Unexpected error");
+    } finally {
+      setLoading(false);
+    }
+  }
+  console.log(userData);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -134,10 +133,19 @@ export default function ProfilePage() {
                 <User className="h-12 w-12 text-primary" />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold">{userData.name}</h1>
-                <p className="text-muted-foreground">{userData.email}</p>
+                <h1 className="text-3xl font-bold">{userData.data.Name}</h1>
+                <p className="text-muted-foreground">{userData.data.Email}</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
+                <input
+                  value={userIdInput}
+                  onChange={(e) => setUserIdInput(e.target.value)}
+                  className="border rounded px-2 py-1 text-sm"
+                  placeholder="User ID (e.g. U001)"
+                />
+                <Button onClick={() => fetchForUser(userIdInput)}>
+                  {loading ? "Loading..." : "Load"}
+                </Button>
                 <Link href="/categories">
                   <Button>Start New Quiz</Button>
                 </Link>
@@ -178,7 +186,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {userQuizHistory.data.map((quiz) => (
+                    {userQuizHistory.data.map((quiz: any) => (
                       <div
                         key={quiz.id}
                         className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
@@ -231,8 +239,8 @@ export default function ProfilePage() {
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
                       {userRewards.data
-                        ?.filter((reward) => reward.Status === "Unclaimed") // 👈 Only show unclaimed rewards
-                        .map((reward) => (
+                        ?.filter((reward: any) => reward.Status === "Unclaimed") // 👈 Only show unclaimed rewards
+                        .map((reward: any) => (
                           <div
                             key={reward.id}
                             className="bg-muted/50 rounded-lg p-4 text-center"
@@ -275,8 +283,8 @@ export default function ProfilePage() {
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
                       {userRewards.data
-                        ?.filter((reward) => reward.Status === "Claimed") // 👈 Only show unclaimed rewards
-                        .map((reward) => (
+                        ?.filter((reward: any) => reward.Status === "Claimed") // 👈 Only show unclaimed rewards
+                        .map((reward: any) => (
                           <div
                             key={reward.id}
                             className="bg-muted/50 rounded-lg p-4 text-center opacity-60"
