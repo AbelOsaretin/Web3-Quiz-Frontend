@@ -6,6 +6,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
+import { headers } from "next/headers"; // added
+import ContextProvider from "@/context";
+
 export const metadata: Metadata = {
   title: "CRYPTOBRAINZ - AI-Powered Web3 Quiz App",
   description:
@@ -13,11 +16,14 @@ export const metadata: Metadata = {
   generator: "v0.app",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersObj = await headers();
+  const cookies = headersObj.get("cookie");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -27,7 +33,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          {/* {children} */}
+
+          <ContextProvider cookies={cookies}>{children}</ContextProvider>
         </ThemeProvider>
       </body>
     </html>

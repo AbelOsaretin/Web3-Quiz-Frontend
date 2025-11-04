@@ -205,14 +205,15 @@ export default function ProfilePage() {
             </Link>
           </nav>
           <div className="flex gap-2">
-            <Button
+            {/* <Button
               variant="outline"
               onClick={() => {
                 console.log("Wallet Connect");
               }}
             >
               Wallet Connect
-            </Button>
+            </Button> */}
+            <appkit-button />
             <Button
               variant="outline"
               onClick={async () => {

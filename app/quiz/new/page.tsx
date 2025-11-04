@@ -14,7 +14,10 @@ import {
 import { Brain, ArrowRight, Clock, BarChart3 } from "lucide-react";
 import AuthToggle from "@/components/AuthToggle";
 
+import { useAppKitAccount } from "@reown/appkit/react";
+
 export default function NewQuizPage() {
+  const { address, isConnected } = useAppKitAccount();
   const router = useRouter();
   // redirect to login if unauthenticated
   useEffect(() => {
@@ -87,24 +90,67 @@ export default function NewQuizPage() {
   const questionCounts = [10, 15, 20];
   const timeLimits = [30, 60, 90, 120]; // 0 means no time limit
 
-  const startQuiz = () => {
+  const startQuiz = async () => {
     if (!selectedCategory) {
       // Add validation feedback
       alert("Please select a category before starting the quiz");
       return;
     }
 
-    // Add console logging for debugging
-    console.log("Starting quiz with:", {
-      category: selectedCategory,
-      difficulty: selectedDifficulty,
-      count: selectedQuestionCount,
-      time: selectedTimeLimit,
-    });
+    try {
+      // check Supabase auth first (dynamic import to avoid top-level SSR issues)
+      const { supabase } = await import("@/lib/supabaseClient");
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user ?? null;
 
-    router.push(
-      `/quiz/play?category=${selectedCategory}&difficulty=${selectedDifficulty}&count=${selectedQuestionCount}&time=${selectedTimeLimit}`
-    );
+      const uid =
+        user?.id ??
+        (typeof window !== "undefined" ? localStorage.getItem("userId") : null);
+
+      if (!uid) {
+        // if we don't have a user id, redirect to login
+        router.push("/login");
+        return;
+      }
+
+      // check wallet stored by your reown/wagmi flow
+
+      if (!address || !isConnected) {
+        // prompt user to connect wallet and redirect to profile (or trigger your wallet modal)
+        alert(
+          "Please connect your wallet on the Profile page before starting a quiz."
+        );
+
+        router.push("/profile");
+        return;
+      }
+
+      const wallet = address;
+
+      // // Add console logging for debugging
+      // console.log("Starting quiz with:", {
+      //   category: selectedCategory,
+      //   difficulty: selectedDifficulty,
+      //   count: selectedQuestionCount,
+      //   time: selectedTimeLimit,
+      //   userId: uid,
+      //   userWallet: wallet,
+      // });
+
+      // include userId and userWallet in query so /quiz/play and the webhook have context
+      router.push(
+        `/quiz/play?category=${encodeURIComponent(
+          selectedCategory
+        )}&difficulty=${encodeURIComponent(
+          selectedDifficulty
+        )}&count=${selectedQuestionCount}&time=${selectedTimeLimit}&userId=${encodeURIComponent(
+          uid
+        )}&userWallet=${encodeURIComponent(wallet)}`
+      );
+    } catch (e) {
+      console.error("startQuiz: failed to verify userId", e);
+      router.push("/login");
+    }
   };
 
   return (
