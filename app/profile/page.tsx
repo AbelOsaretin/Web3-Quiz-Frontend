@@ -15,6 +15,11 @@ import {
 } from "@/components/ui/card";
 import { Brain, User, Trophy } from "lucide-react";
 
+import { formatUnits } from "viem";
+
+import { useWriteContract } from "wagmi";
+import { abi } from "@/lib/abi";
+
 // Using shared Supabase client from lib/supabaseClient.ts
 
 // Notes / assumptions:
@@ -24,6 +29,8 @@ import { Brain, User, Trophy } from "lucide-react";
 // If your table names / columns differ, update the queries below accordingly.
 
 export default function ProfilePage() {
+  const { writeContract } = useWriteContract();
+
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("history");
   const [userIdInput, setUserIdInput] = useState("U001");
@@ -360,7 +367,7 @@ export default function ProfilePage() {
                               <Trophy className="h-6 w-6 text-primary" />
                             </div>
                             <p className="font-medium">
-                              ${reward.Reward_Amount}
+                              ${`${formatUnits(reward.Reward_Amount, 6)}.00`}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
                               Earned on{" "}
@@ -368,15 +375,31 @@ export default function ProfilePage() {
                             </p>
                             <br />
                             <Button
-                              onClick={() =>
-                                console.log(
-                                  reward.User_ID,
-                                  reward.Quiz_Attempt_ID,
-                                  reward.Reward_Amount,
-                                  reward.Raw_Claim_ID,
-                                  reward.Signature
-                                )
-                              }
+                              onClick={() => {
+                                writeContract({
+                                  abi,
+                                  address:
+                                    "0x6b175474e89094c44da98b954eedeac495271d0f",
+                                  functionName: "transferFrom",
+                                  args: [
+                                    "0xd2135CfB216b74109775236E36d4b433F1DF507B",
+                                    "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
+                                    BigInt(
+                                      formatUnits(reward.Reward_Amount, 6)
+                                    ),
+                                  ],
+                                });
+
+                                console.log({
+                                  "User ID": reward.User_ID,
+                                  "User Wallet Address":
+                                    reward.User_Wallet_Address,
+                                  "Quiz Attempt ID": reward.Quiz_Attempt_ID,
+                                  "Reward Amount": reward.Reward_Amount,
+                                  "Raw Claim ID": reward.Raw_Claim_ID,
+                                  "Claim Signature": reward.Signature,
+                                });
+                              }}
                             >
                               Get Reward
                             </Button>
@@ -404,7 +427,7 @@ export default function ProfilePage() {
                               <Trophy className="h-6 w-6 text-muted-foreground" />
                             </div>
                             <p className="font-medium">
-                              {reward.Reward_Amount}
+                              {`${formatUnits(reward.Reward_Amount, 6)}.00`}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
                               Claimed

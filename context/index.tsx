@@ -3,7 +3,7 @@
 import { wagmiAdapter, projectId } from "@/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createAppKit } from "@reown/appkit/react";
-import { mainnet, arbitrum } from "@reown/appkit/networks";
+import { baseSepolia, base } from "@reown/appkit/networks";
 import React, { type ReactNode } from "react";
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
 
@@ -16,9 +16,10 @@ if (!projectId) {
 
 // Set up metadata
 const metadata = {
-  name: "appkit-example",
-  description: "AppKit Example",
-  url: "https://appkitexampleapp.com", // origin must match your domain & subdomain
+  name: "Crypto BrainZ",
+  description:
+    "Challenge yourself with AI-generated quizzes across various categories of web3",
+  url: "https://cryptobrainz.vercel.com", // origin must match your domain & subdomain
   icons: ["https://avatars.githubusercontent.com/u/179229932"],
 };
 
@@ -26,11 +27,14 @@ const metadata = {
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [mainnet, arbitrum],
-  defaultNetwork: mainnet,
+  networks: [baseSepolia, base],
+  defaultNetwork: baseSepolia,
   metadata: metadata,
+  themeMode: "dark",
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
+    connectMethodsOrder: ["social", "email", "wallet"],
+    socials: ["google"],
   },
 });
 
