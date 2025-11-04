@@ -156,7 +156,7 @@ export default function PlayQuizPage() {
       };
 
       const res = await fetch(
-        "https://abelosaretin.name.ng/webhook-test/submitQuiz",
+        "https://abelosaretin.name.ng/webhook/submitQuiz",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

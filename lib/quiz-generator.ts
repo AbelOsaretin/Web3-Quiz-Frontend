@@ -216,7 +216,7 @@ export async function generateQuestions(category: string, difficulty: string, co
   try {
     // This is a placeholder for the AI-generated questions
     // In a real implementation, we would use the AI SDK to generate questions
-    const response = await fetch("https://abelosaretin.name.ng/webhook-test/getQuiz", {
+    const response = await fetch("https://abelosaretin.name.ng/webhook/getQuiz", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

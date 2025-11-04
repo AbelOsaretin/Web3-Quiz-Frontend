@@ -118,10 +118,9 @@ export default function NewQuizPage() {
       if (!address || !isConnected) {
         // prompt user to connect wallet and redirect to profile (or trigger your wallet modal)
         alert(
-          "Please connect your wallet on the Profile page before starting a quiz."
+          "Please connect your wallet at the top of this page before starting a quiz."
         );
 
-        router.push("/profile");
         return;
       }
 
