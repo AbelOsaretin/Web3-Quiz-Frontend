@@ -174,10 +174,10 @@ export default function NewQuizPage() {
             </Link>
             {/* <Link href="/leaderboard" className="font-medium hover:text-primary">
               Leaderboard
-            </Link>
+            </Link> */}
             <Link href="/profile" className="font-medium hover:text-primary">
               Profile
-            </Link> */}
+            </Link>
           </nav>
           <AuthToggle />
         </div>
@@ -235,6 +235,7 @@ export default function NewQuizPage() {
                       }
                       className="h-auto py-4 flex flex-col gap-2 justify-center items-center text-left"
                       onClick={() => setSelectedDifficulty(difficulty.id)}
+                      disabled
                     >
                       <span className="font-bold">{difficulty.name}</span>
                     </Button>

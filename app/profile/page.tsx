@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Brain, User, Trophy } from "lucide-react";
 
+import { useAppKitAccount } from "@reown/appkit/react";
+
 import { formatUnits } from "viem";
 
 import { useWriteContract } from "wagmi";
@@ -30,6 +32,7 @@ import { abi } from "@/lib/abi";
 
 export default function ProfilePage() {
   const { writeContract } = useWriteContract();
+  const { isConnected } = useAppKitAccount();
 
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("history");
@@ -354,7 +357,7 @@ export default function ProfilePage() {
                       You can only claim one reward.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  {/* <CardContent>
                     <div className="grid grid-cols-2 gap-4">
                       {userRewards.data
                         ?.filter((reward: any) => reward.Status === "Unclaimed") // 👈 Only show unclaimed rewards
@@ -376,35 +379,100 @@ export default function ProfilePage() {
                             <br />
                             <Button
                               onClick={() => {
+                                if (!isConnected) {
+                                  alert(
+                                    "Please connect your wallet to claim rewards."
+                                  );
+                                  return;
+                                }
                                 writeContract({
                                   abi,
                                   address:
-                                    "0x6b175474e89094c44da98b954eedeac495271d0f",
-                                  functionName: "transferFrom",
+                                    "0x65f19aA25AeAb8cd8346E1b8CCCc880a26730E52",
+                                  functionName: "claimReward",
                                   args: [
-                                    "0xd2135CfB216b74109775236E36d4b433F1DF507B",
-                                    "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
-                                    BigInt(
-                                      formatUnits(reward.Reward_Amount, 6)
-                                    ),
+                                    reward.User_ID,
+                                    reward.User_Wallet_Address,
+                                    reward.Reward_Amount,
+                                    reward.Raw_Claim_ID,
+                                    reward.Signature,
                                   ],
                                 });
 
-                                console.log({
-                                  "User ID": reward.User_ID,
-                                  "User Wallet Address":
-                                    reward.User_Wallet_Address,
-                                  "Quiz Attempt ID": reward.Quiz_Attempt_ID,
-                                  "Reward Amount": reward.Reward_Amount,
-                                  "Raw Claim ID": reward.Raw_Claim_ID,
-                                  "Claim Signature": reward.Signature,
-                                });
+                                console.log("Reward Claiming Initiated...");
                               }}
                             >
                               Get Reward
                             </Button>
                           </div>
                         ))}
+                    </div>
+                  </CardContent> */}
+
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      {(() => {
+                        const firstReward = userRewards.data?.filter(
+                          (reward: any) => reward.Status === "Unclaimed"
+                        )[0];
+
+                        if (!firstReward) {
+                          return <p>No rewards available.</p>;
+                        }
+
+                        return (
+                          <div
+                            key={firstReward.id}
+                            className="bg-muted/50 rounded-lg p-4 text-center"
+                          >
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                              <Trophy className="h-6 w-6 text-primary" />
+                            </div>
+                            <p className="font-medium">
+                              $
+                              {`${formatUnits(
+                                firstReward.Reward_Amount,
+                                6
+                              )}.00`}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Earned on{" "}
+                              {new Date(
+                                firstReward.created_at
+                              ).toLocaleDateString()}
+                            </p>
+                            <br />
+                            <Button
+                              onClick={() => {
+                                if (!isConnected) {
+                                  alert(
+                                    "Please connect your wallet to claim rewards."
+                                  );
+                                  return;
+                                }
+                                // writeContract({
+                                //   abi,
+                                //   address:
+                                //     "0x65f19aA25AeAb8cd8346E1b8CCCc880a26730E52",
+                                //   functionName: "claimReward",
+                                //   args: [
+                                //     firstReward.User_ID,
+                                //     firstReward.User_Wallet_Address,
+                                //     firstReward.Reward_Amount,
+                                //     firstReward.Raw_Claim_ID,
+                                //     firstReward.Signature,
+                                //   ],
+                                // });
+
+                                console.log("Reward Claiming Initiated...");
+                              }}
+                              disabled
+                            >
+                              Get Reward
+                            </Button>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </CardContent>
                 </Card>
