@@ -188,59 +188,65 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Link href="/">
+        <div className="container mx-auto px-4 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
+            <div className="flex items-center justify-between md:justify-start">
               <div className="flex items-center gap-2">
-                <Brain className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
+                <Link href="/">
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-8 w-8 text-primary" />
+                    <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
+                  </div>
+                </Link>
               </div>
-            </Link>
-          </div>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="font-medium hover:text-primary">
-              Home
-            </Link>
-            <Link href="/categories" className="font-medium hover:text-primary">
-              Categories
-            </Link>
-            {/* <Link
-              href="/leaderboard"
-              className="font-medium hover:text-primary"
-            >
-              Leaderboard
-            </Link> */}
-            <Link href="/profile" className="font-medium text-primary">
-              Profile
-            </Link>
-          </nav>
-          <div className="flex gap-2">
-            {/* <Button
-              variant="outline"
-              onClick={() => {
-                console.log("Wallet Connect");
-              }}
-            >
-              Wallet Connect
-            </Button> */}
-            <appkit-button />
-            <Button
-              variant="outline"
-              onClick={async () => {
-                try {
-                  await supabase.auth.signOut();
-                } catch (e) {
-                  console.error("Sign out error:", e);
-                }
-                // clear local userId used elsewhere
-                if (typeof window !== "undefined") {
-                  localStorage.removeItem("userId");
-                }
-                router.push("/");
-              }}
-            >
-              Logout
-            </Button>
+              <div className="md:hidden">
+                <div className="flex gap-2">
+                  <appkit-button />
+                  <Button variant="outline">Logout</Button>
+                </div>
+              </div>
+            </div>
+
+            <nav className="flex justify-center gap-4 mt-3 md:mt-0">
+              <Link
+                href="/"
+                className="font-medium hover:text-primary text-sm md:text-base"
+              >
+                Home
+              </Link>
+              <Link
+                href="/categories"
+                className="font-medium hover:text-primary text-sm md:text-base"
+              >
+                Categories
+              </Link>
+              <Link
+                href="/profile"
+                className="font-medium text-primary text-sm md:text-base"
+              >
+                Profile
+              </Link>
+            </nav>
+
+            <div className="hidden md:flex justify-end gap-2 items-center">
+              <appkit-button />
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await supabase.auth.signOut();
+                  } catch (e) {
+                    console.error("Sign out error:", e);
+                  }
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("userId");
+                  }
+                  router.push("/");
+                }}
+              >
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>

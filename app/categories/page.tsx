@@ -134,30 +134,47 @@ export default function CategoriesPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Link href="/">
+        <div className="container mx-auto px-4 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
+            <div className="flex items-center justify-between md:justify-start">
               <div className="flex items-center gap-2">
-                <Brain className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
+                <Link href="/">
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-8 w-8 text-primary" />
+                    <h1 className="text-2xl font-bold">CRYPTO BRAINZ</h1>
+                  </div>
+                </Link>
               </div>
-            </Link>
+              <div className="md:hidden">
+                <AuthToggle />
+              </div>
+            </div>
+
+            <nav className="flex justify-center gap-4 mt-3 md:mt-0">
+              <Link
+                href="/"
+                className="font-medium hover:text-primary text-sm md:text-base"
+              >
+                Home
+              </Link>
+              <Link
+                href="/categories"
+                className="font-medium text-primary text-sm md:text-base"
+              >
+                Categories
+              </Link>
+              <Link
+                href="/profile"
+                className="font-medium hover:text-primary text-sm md:text-base"
+              >
+                Profile
+              </Link>
+            </nav>
+
+            <div className="hidden md:flex justify-end">
+              <AuthToggle />
+            </div>
           </div>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="font-medium hover:text-primary">
-              Home
-            </Link>
-            <Link href="/categories" className="font-medium text-primary">
-              Categories
-            </Link>
-            {/* <Link href="/leaderboard" className="font-medium hover:text-primary">
-              Leaderboard
-            </Link>*/}
-            <Link href="/profile" className="font-medium hover:text-primary">
-              Profile
-            </Link>
-          </nav>
-          <AuthToggle />
         </div>
       </header>
 
