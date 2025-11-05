@@ -54,6 +54,7 @@ export default function PlayQuizPage() {
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
   const [answers, setAnswers] = useState<Array<number | null>>([]);
   const [score, setScore] = useState<number | null>(null);
+  const [totalQuestion, setTotalQuestion] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [submissionResult, setSubmissionResult] = useState<any | null>(null);
@@ -166,7 +167,7 @@ export default function PlayQuizPage() {
 
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(`submission failed: ${res.status} ${text}`);
+        throw new Error(`Submission Failed: ${res.status} ${text}`);
       }
 
       // parse backend response (try JSON, fall back to text)
@@ -175,9 +176,11 @@ export default function PlayQuizPage() {
         if (contentType.includes("application/json")) {
           const json = await res.json();
           console.debug("submitQuiz response (json):", json);
+          console.log("submitQuiz response (json):", json);
           setSubmissionResult(json);
-          if (json && typeof json.score === "number") {
-            setScore(json.score);
+          if (json && typeof json.Total_Passed === "number") {
+            setScore(json.Total_Passed);
+            setTotalQuestion(json.Total_Question);
           }
         } else {
           // non-json response: capture as text
@@ -265,8 +268,8 @@ export default function PlayQuizPage() {
 
   if (quizCompleted) {
     const percentage =
-      typeof score === "number" && questions.length
-        ? Math.round((score / questions.length) * 100)
+      typeof score === "number" && totalQuestion
+        ? Math.round((score / totalQuestion) * 100)
         : null;
 
     return (
@@ -289,12 +292,12 @@ export default function PlayQuizPage() {
             <div className="max-w-2xl mx-auto">
               {submissionResult && (
                 <div className="mb-4">
-                  <h4 className="font-medium mb-2">Server response (debug)</h4>
+                  {/* <h4 className="font-medium mb-2">Server response (debug)</h4>
                   <pre className="p-3 bg-muted/20 rounded text-sm overflow-auto">
                     {typeof submissionResult === "string"
                       ? submissionResult
                       : JSON.stringify(submissionResult, null, 2)}
-                  </pre>
+                  </pre> */}
                 </div>
               )}
               <Card className="overflow-hidden">
@@ -311,7 +314,7 @@ export default function PlayQuizPage() {
                       <div className="h-24 w-24 rounded-full bg-amber-100 flex items-center justify-center">
                         <Brain className="h-12 w-12 text-amber-500" />
                       </div>
-                    ) : percentage >= 70 ? (
+                    ) : percentage === 100 ? (
                       <div className="h-24 w-24 rounded-full bg-green-100 flex items-center justify-center">
                         <CheckCircle className="h-12 w-12 text-green-500" />
                       </div>

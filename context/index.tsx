@@ -33,7 +33,7 @@ const modal = createAppKit({
   themeMode: "dark",
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
-    connectMethodsOrder: ["social", "email", "wallet"],
+    connectMethodsOrder: ["social", "wallet"],
     socials: ["google"],
   },
 });
