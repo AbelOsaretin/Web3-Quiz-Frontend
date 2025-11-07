@@ -456,23 +456,22 @@ export default function ProfilePage() {
                                   );
                                   return;
                                 }
-                                // writeContract({
-                                //   abi,
-                                //   address:
-                                //     "0x65f19aA25AeAb8cd8346E1b8CCCc880a26730E52",
-                                //   functionName: "claimReward",
-                                //   args: [
-                                //     firstReward.User_ID,
-                                //     firstReward.User_Wallet_Address,
-                                //     firstReward.Reward_Amount,
-                                //     firstReward.Raw_Claim_ID,
-                                //     firstReward.Signature,
-                                //   ],
-                                // });
+                                writeContract({
+                                  abi,
+                                  address:
+                                    "0xc4299E3D06F87CcC372060Ff6a47904Bb24Af335",
+                                  functionName: "claimReward",
+                                  args: [
+                                    firstReward.User_ID,
+                                    firstReward.User_Wallet_Address,
+                                    firstReward.Reward_Amount,
+                                    firstReward.Raw_Claim_ID,
+                                    firstReward.Signature,
+                                  ],
+                                });
 
                                 console.log("Reward Claiming Initiated...");
                               }}
-                              disabled
                             >
                               Get Reward
                             </Button>
