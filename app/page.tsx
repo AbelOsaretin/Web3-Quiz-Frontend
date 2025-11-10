@@ -73,7 +73,7 @@ export default function Home() {
                     // onClick={() => console.log("Start Quiz button clicked")}
                   >
                     <Zap className="h-5 w-5" />
-                    Start Coding Quiz
+                    Start Web3 Quiz
                   </Button>
                 </Link>
                 <Link href="/categories">
